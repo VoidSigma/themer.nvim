@@ -1,18 +1,18 @@
+local util = require("themer.util")
+
 local M = {}
 
 function M.apply(options, theme_name)
     theme_name = theme_name or options.theme
 
-    local ok, theme = pcall(require, "themer.themes." .. theme_name)
+    local theme, error_message = util.get_theme(theme_name)
 
-    if not ok then
-        vim.notify(
-            string.format("Themer: unknown theme '%s'", theme_name),
-            vim.log.levels.ERROR,
-            { title = "Themer" }
-        )
+    if not theme then
+        util.notify(error_message, vim.log.levels.ERROR)
         return false
     end
+
+    local colors = theme.colors()
 
     vim.cmd("highlight clear")
 
@@ -20,9 +20,12 @@ function M.apply(options, theme_name)
         vim.cmd("syntax reset")
     end
 
-    local colors = theme.colors()
-
     require("themer.highlights").apply(colors)
+    require("themer.integrations").apply(options, colors)
+
+    if type(theme.apply) == "function" then
+        theme.apply(colors)
+    end
 
     vim.g.colors_name = "themer-" .. theme_name
 

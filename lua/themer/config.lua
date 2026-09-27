@@ -5,11 +5,11 @@ M.defaults = {
     theme = "default",
 
     global = {
-        borders = "rounded",
-        winblend = 0,
+        borders = "single",
+        winblend = 5,
 
         termguicolors = true,
-        background = "dark",
+        background = "light",
 
         cursorline = true,
         number = true,
@@ -18,19 +18,39 @@ M.defaults = {
         signcolumn = "yes",
         laststatus = 3,
         showmode = false,
+
+        diagnostic = {
+            virtual_text = true,
+            signs = true,
+            underline = true,
+            update_in_insert = false,
+            severity_sort = true,
+        },
+    },
+
+    integrations = {
+        telescope = true,
+        cmp = true,
+        gitsigns = true,
+        which_key = true,
+        neo_tree = true,
     },
 }
 
-M.options = vim.deepcopy(M.defaults)
+local options = vim.deepcopy(M.defaults)
 
 function M.setup(user_options)
-    M.options = vim.tbl_deep_extend(
+    options = vim.tbl_deep_extend(
         "force",
         vim.deepcopy(M.defaults),
         user_options or {}
     )
 
-    return M.options
+    return options
+end
+
+function M.get()
+    return options
 end
 
 return M
